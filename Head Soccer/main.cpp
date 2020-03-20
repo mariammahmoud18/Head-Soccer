@@ -91,51 +91,30 @@ struct MainMenu
     //When mouse hovers over buttons
     void blink(sf::Event &e)
     {   
-        if(newGame.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
-        {
-           newGame.clicked(); 
-        }
+        if(newGame.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y)
+            newGame.clicked(); 
         else
-        {
             newGame.notClicked();
-        }
 
         /*if(coninue.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
-        {
            coninue.clicked(); 
-        }
         else
-        {
-            coninue.notClicked();
-        }*/
+            coninue.notClicked(); */
         
         if(multi.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
-        {
-           multi.clicked(); 
-        }
+            multi.clicked(); 
         else
-        {
             multi.notClicked();
-        }
         
         if(info.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
-        {
-           info.clicked(); 
-        }
+            info.clicked(); 
         else
-        {
             info.notClicked();
-        }
         
         if(credits.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
-        {
-           credits.clicked(); 
-        }
+            credits.clicked(); 
         else
-        {
-            credits.notClicked();
-        }
-        
+            credits.notClicked();        
     }
 
     //Moving Cursor with mouse position
