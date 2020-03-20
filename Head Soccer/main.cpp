@@ -91,7 +91,7 @@ struct MainMenu
     //When mouse hovers over buttons
     void blink(sf::Event &e)
     {   
-        if(newGame.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y)
+        if(newGame.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
             newGame.clicked(); 
         else
             newGame.notClicked();
