@@ -180,7 +180,7 @@ struct MainMenu
         else
             credits.notClicked();        
     }
-
+    
     //Moving Cursor with mouse position
     void moveCursor(sf::Event &e)
     {
@@ -204,7 +204,7 @@ int main()
 {
     
     //Creating window
-    sf::RenderWindow window(sf::VideoMode(1000, 650), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
+    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
 
