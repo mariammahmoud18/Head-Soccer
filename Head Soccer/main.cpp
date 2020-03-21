@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <string>
 using namespace sf;
 
@@ -118,6 +119,18 @@ struct Button
 
 struct MainMenu
 {   
+    //Music
+    sf::Music menuMusic;
+
+    void loadMusic()
+    {
+        menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
+    }
+
+    void playMusic() {
+        menuMusic.play();
+    }
+
     //Buttons
     Button newGame, coninue, multi, info, credits;
 
