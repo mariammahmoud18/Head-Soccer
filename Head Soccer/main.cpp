@@ -26,35 +26,38 @@ struct SinglePlayer
         ballT.loadFromFile("Data/Images/ball.png");
 
         // Sprites 
-        sf::Sprite player1(p1), player2(p2), background(back), ball(ballT), goal1(g1), goal2(g2);
-    }
+        player1.setTexture(p1);
+        player2.setTexture(p2);
+        background.setTexture(back);
+        ball.setTexture(ballT);
+        goal1.setTexture(g1);
+        goal2.setTexture(g2);
 
-    void setOrigin()
-    {
+        //Set Origin
         ball.setOrigin(Vector2f(25, 25));
         player1.setOrigin(Vector2f(35, 35));
         player2.setOrigin(Vector2f(35, 35));
         goal1.setOrigin(Vector2f(50, 90));
         goal2.setOrigin(Vector2f(50, 90));
-    }
 
-    void Position() {
+        //Set Position
         ball.setPosition(Vector2f(500, 100));
         player1.setPosition(Vector2f(120, 550));
         player2.setPosition(Vector2f(880, 550));
         goal1.setPosition(Vector2f(50, 500));
         goal2.setPosition(Vector2f(950, 500));
-    }
+
+    }   
 
     void Logic()
     {
         // Keyboard Movement
         if (Keyboard::isKeyPressed(Keyboard::Key::Left))
-            player1.move(-0.1f, 0.0f);
+            player1.move(-0.9f, 0.0f);
         if (Keyboard::isKeyPressed(Keyboard::Key::Right))
-            player1.move(0.1f, 0.0f);
+            player1.move(0.9f, 0.0f);
         if (Keyboard::isKeyPressed(Keyboard::Key::Up))
-            player1.move(0.0f, -0.1f);
+            player1.move(0.0f, -0.9f);
     }
     
     void render(sf::RenderWindow &window)
@@ -237,8 +240,12 @@ int main()
     window.setMouseCursorVisible(false);
 
     //Main Menu
-    MainMenu menu;
-    menu.create();
+    //MainMenu menu;
+    //menu.create();
+
+    //Single Player Session
+    SinglePlayer NewGame;
+    NewGame.Load();
 
     //Game Loop
     while (window.isOpen())
@@ -255,12 +262,14 @@ int main()
             }
         }
         //Logic
-        menu.blink(window);
-        menu.moveCursor(window);
+        // menu.blink(window);
+        //menu.moveCursor(window);
+        NewGame.Logic();
 
         //Rendering
         window.clear();
-        menu.render(window);
+        //menu.render(window);
+        NewGame.render(window);
         window.display();
     }
 
