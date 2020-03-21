@@ -1,24 +1,30 @@
+//Including Libraries
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <string>
-using namespace sf;
 
 //Constants
 #define screenWidth 1000
 #define screenHeight 650
 
+//Background
+sf::Texture backgroundTexture;
+sf::Sprite background;
+
+//variable to know which window to render and handle
+char session='m';
+
 struct SinglePlayer
 {
     // Textures declaration
-    sf::Texture back, p1, p2, ballT, g1, g2;
+    sf::Texture p1, p2, ballT, g1, g2;
 
     // Sprites declaration
-    sf::Sprite player1, player2, background, ball, goal1, goal2;
+    sf::Sprite player1, player2, ball, goal1, goal2;
 
     void Load()
     {
         // Textures
-        back.loadFromFile("Data/Images/Background1.jpg");
         p1.loadFromFile("Data/Images/Head1.png");
         p2.loadFromFile("Data/Images/Head2.png");
         g1.loadFromFile("Data/Images/Goal1.png");
@@ -28,35 +34,34 @@ struct SinglePlayer
         // Sprites 
         player1.setTexture(p1);
         player2.setTexture(p2);
-        background.setTexture(back);
         ball.setTexture(ballT);
         goal1.setTexture(g1);
         goal2.setTexture(g2);
 
         //Set Origin
-        ball.setOrigin(Vector2f(25, 25));
-        player1.setOrigin(Vector2f(35, 35));
-        player2.setOrigin(Vector2f(35, 35));
-        goal1.setOrigin(Vector2f(50, 90));
-        goal2.setOrigin(Vector2f(50, 90));
+        ball.setOrigin(sf::Vector2f(25, 25));
+        player1.setOrigin(sf::Vector2f(35, 35));
+        player2.setOrigin(sf::Vector2f(35, 35));
+        goal1.setOrigin(sf::Vector2f(50, 90));
+        goal2.setOrigin(sf::Vector2f(50, 90));
 
         //Set Position
-        ball.setPosition(Vector2f(500, 100));
-        player1.setPosition(Vector2f(120, 550));
-        player2.setPosition(Vector2f(880, 550));
-        goal1.setPosition(Vector2f(50, 500));
-        goal2.setPosition(Vector2f(950, 500));
+        ball.setPosition(sf::Vector2f(500, 100));
+        player1.setPosition(sf::Vector2f(120, 550));
+        player2.setPosition(sf::Vector2f(880, 550));
+        goal1.setPosition(sf::Vector2f(50, 500));
+        goal2.setPosition(sf::Vector2f(950, 500));
 
     }   
 
     void Logic()
     {
         // Keyboard Movement
-        if (Keyboard::isKeyPressed(Keyboard::Key::Left))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
             player1.move(-0.9f, 0.0f);
-        if (Keyboard::isKeyPressed(Keyboard::Key::Right))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
             player1.move(0.9f, 0.0f);
-        if (Keyboard::isKeyPressed(Keyboard::Key::Up))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
             player1.move(0.0f, -0.9f);
     }
     
@@ -128,9 +133,6 @@ struct MainMenu
     //Buttons
     Button newGame, coninue, multi, info, credits;
 
-    //Background
-    sf::Texture backgroundTexture;
-    sf::Sprite background;
 
     //Cursor
     sf::Texture cursorTexture;
@@ -144,11 +146,7 @@ struct MainMenu
 
     //Creating Objects
     void create()
-    {
-        //Create Background
-        backgroundTexture.loadFromFile("Data/Images/Background1.jpg");
-        background.setTexture(backgroundTexture);
-        
+    {        
         //Create Cursor
         cursorTexture.loadFromFile("Data/Images/cursor.png");
         cursor.setTexture(cursorTexture);
@@ -172,13 +170,15 @@ struct MainMenu
     //Logic
 
     //When mouse hovers over buttons
-    void blink(sf::RenderWindow &window)
+    void Logic(sf::RenderWindow &window)
     {   
-        Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
         if(newGame.frame.getGlobalBounds().contains(mousePos))
         {
             newGame.clicked();
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                session = 's';
         }
         else
             newGame.notClicked();
@@ -210,12 +210,19 @@ struct MainMenu
             credits.notClicked();        
     }
 
+
     //Moving Cursor with mouse position
     void moveCursor(sf::RenderWindow &window)
     {
-        Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
         cursor.setPosition(mousePos);
+    }
+
+    //Render Cursor
+    void renderCursor(sf::RenderWindow &window)
+    {
+        window.draw(cursor);
     }
 
     //Rendering
@@ -227,21 +234,24 @@ struct MainMenu
         info.render(window);
         credits.render(window);
         // coninue.render(window);
-        window.draw(cursor);
     }
 };
 
 int main()
 {
-    
     //Creating window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
-
+    
+    //Create Background
+    backgroundTexture.loadFromFile("Data/Images/Background1.jpg");
+    background.setTexture(backgroundTexture);
+    
+    
     //Main Menu
-    //MainMenu menu;
-    //menu.create();
+    MainMenu menu;
+    menu.create();
 
     //Single Player Session
     SinglePlayer NewGame;
@@ -262,14 +272,32 @@ int main()
             }
         }
         //Logic
-        // menu.blink(window);
-        //menu.moveCursor(window);
-        NewGame.Logic();
+        switch (session)
+        {
+        case 'm':
+            menu.Logic(window);
+            break;
+        case 's':
+            NewGame.Logic();
+            break;
+        }
+
+        menu.moveCursor(window);
 
         //Rendering
         window.clear();
-        //menu.render(window);
-        NewGame.render(window);
+        
+        switch (session)
+        {
+        case 'm':
+            menu.render(window);
+            break;
+        case 's':
+            NewGame.render(window);
+            break;
+        }
+        
+        menu.renderCursor(window);
         window.display();
     }
 
