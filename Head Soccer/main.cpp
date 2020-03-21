@@ -8,8 +8,10 @@ using namespace sf;
 
 struct SinglePlayer
 {
-    //Textures
+    // Textures declaration
     sf::Texture back, p1, p2, ballT, g1, g2;
+
+    // Sprites declaration
     sf::Sprite player1, player2, background, ball, goal1, goal2;
 
     void Load()
@@ -18,15 +20,16 @@ struct SinglePlayer
         back.loadFromFile("Data/Images/Background1.jpg");
         p1.loadFromFile("Data/Images/Head1.png");
         p2.loadFromFile("Data/Images/Head2.png");
-        ballT.loadFromFile("Data/Images/ball.png");
         g1.loadFromFile("Data/Images/Goal1.png");
         g2.loadFromFile("Data/Images/Goal2.png");
+        ballT.loadFromFile("Data/Images/ball.png");
 
         // Sprites 
         sf::Sprite player1(p1), player2(p2), background(back), ball(ballT), goal1(g1), goal2(g2);
     }
 
-    void setOrigin() {
+    void setOrigin()
+    {
         ball.setOrigin(Vector2f(25, 25));
         player1.setOrigin(Vector2f(35, 35));
         player2.setOrigin(Vector2f(35, 35));
@@ -42,17 +45,17 @@ struct SinglePlayer
         goal2.setPosition(Vector2f(950, 500));
     }
 
-    /*void Movement() {
+    void Logic()
+    {
+        // Keyboard Movement
         if (Keyboard::isKeyPressed(Keyboard::Key::Left))
             player1.move(-0.1f, 0.0f);
         if (Keyboard::isKeyPressed(Keyboard::Key::Right))
             player1.move(0.1f, 0.0f);
         if (Keyboard::isKeyPressed(Keyboard::Key::Up))
             player1.move(0.0f, -0.1f);
-        if (Keyboard::isKeyPressed(Keyboard::Key::Down))
-            player1.move(0.0f, 0.1f);
     }
-    */
+    
     void render(sf::RenderWindow &window)
     {
         window.draw(background);
@@ -116,10 +119,12 @@ struct Button
 struct MainMenu
 {   
     //Buttons
-    Button newGame,coninue,multi,info,credits;
+    Button newGame, coninue, multi, info, credits;
+
     //Background
     sf::Texture backgroundTexture;
     sf::Sprite background;
+
     //Cursor
     sf::Texture cursorTexture;
     sf::Sprite cursor;
