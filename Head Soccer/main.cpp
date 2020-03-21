@@ -75,7 +75,13 @@ struct Button
     sf::Font BtnFont;
     sf::Sprite frame;
     sf::Text title;
+    sf::Music btnHover, btnClick;
 
+    void loadMusic()
+    {
+        btnHover.openFromFile("Data/Sounds/btnHover.wav");
+        btnClick.openFromFile("Data/Sounds/btnClick.wav");
+    }
 
     void lock()
     {
@@ -84,6 +90,7 @@ struct Button
     void clicked()
     {
         frame.setTextureRect(sf::IntRect(0,0,size.x - 27,size.y));
+        btnHover.play();
     }
     void notClicked()
     {
@@ -120,13 +127,13 @@ struct Button
 struct MainMenu
 {   
     //Music
-    sf::Music menuMusic,btnHover,btnClick;
+    sf::Music menuMusic; // , btnHover, btnClick;
 
     void loadMusic()
     {
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
-        btnHover.openFromFile("Data/Sounds/btnHover.wav");
-        btnClick.openFromFile("Data/Sounds/btnClick.wav");
+        //btnHover.openFromFile("Data/Sounds/btnHover.wav");
+        //btnClick.openFromFile("Data/Sounds/btnClick.wav");
     }
 
     void playMusic() {
