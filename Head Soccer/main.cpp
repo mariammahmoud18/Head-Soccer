@@ -77,12 +77,6 @@ struct Button
     sf::Text title;
     sf::Music btnHover, btnClick;
 
-    void loadMusic()
-    {
-        btnHover.openFromFile("Data/Sounds/btnHover.wav");
-        btnClick.openFromFile("Data/Sounds/btnClick.wav");
-    }
-
     void lock()
     {
         frame.setTextureRect(sf::IntRect(size.x * 2 + 30,0,size.x - 28,size.y));
@@ -115,6 +109,10 @@ struct Button
         title.setCharacterSize(50);
         title.setPosition(frame.getPosition().x - (size.x / 6) - shift, frame.getPosition().y - (size.y / 5));
         title.setString(x);
+        
+        //Music of Button
+        btnHover.openFromFile("Data/Sounds/btnHover.wav");
+        btnClick.openFromFile("Data/Sounds/btnClick.wav");
     }
 
     void render(sf::RenderWindow &window)
