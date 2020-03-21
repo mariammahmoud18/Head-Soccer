@@ -121,8 +121,17 @@ struct Button
 
 struct MainMenu
 {   
+    /////////////////VARIABLES
+    
+    //did it leave button
+    bool isOut[4] = {1,1,1,1};
+    
     //Music
-    sf::Music menuMusic, btnHover, btnClick;
+    sf::Music menuMusic;
+
+    //Sounds
+    sf::SoundBuffer btnHoverbufr, btnClickbufr;
+    sf::Sound btnHover, btnClick;
 
     //Buttons
     Button newGame, coninue, multi, info, credits;
@@ -132,6 +141,9 @@ struct MainMenu
     sf::Texture cursorTexture;
     sf::Sprite cursor;
 
+    
+    /////////////////FUNCTIONS
+    
     //Play Music
     void playMusic() 
     {
@@ -154,11 +166,16 @@ struct MainMenu
         credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Credits", 7);    
         //coninue.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Continue", 26);
 
-        //Load Music
+        //Load and Play Music
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
-        btnHover.openFromFile("Data/Sounds/btnHover.wav");
-        btnClick.openFromFile("Data/Sounds/btnClick.wav");
+        menuMusic.setLoop(true);
+        menuMusic.play();
 
+        //Load Sounds
+        btnHoverbufr.loadFromFile("Data/Sounds/btnHover.wav");
+        btnHover.setBuffer(btnHoverbufr);
+        btnClickbufr.loadFromFile("Data/Sounds/btnClick.wav");
+        btnClick.setBuffer(btnClickbufr);
     }
 
     //Logic
@@ -168,40 +185,103 @@ struct MainMenu
     {   
         sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
+
+        //Single Player Button Hovered or Clicked Actions
         if(newGame.frame.getGlobalBounds().contains(mousePos))
         {
             newGame.clicked();
+            
+            if(isOut[0])
+                btnHover.play();
+            
+            isOut[0]=0;
+            
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                btnClick.play();
                 session = 's';
+                menuMusic.stop();
+            }
         }
         else
+        {
             newGame.notClicked();
+            isOut[0] = 1;
+        }
 
         /*if(coninue.frame.getGlobalBounds().contains(mousePos))
            coninue.clicked(); 
         else
             coninue.notClicked(); */
         
+        //MultiPlayer Button Hovered or Clicked Actions
         if(multi.frame.getGlobalBounds().contains(mousePos))
         {
             multi.clicked();
+
+            if(isOut[1])
+                btnHover.play();
+            
+            isOut[1]=0;
+            
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                btnClick.play();
+                session = 'm';
+                menuMusic.stop();
+            }
         }
         else
+        {
             multi.notClicked();
+            isOut[1] = 1;
+        }
         
+        //Instructions Button Hovered or Clicked Actions
         if(info.frame.getGlobalBounds().contains(mousePos))
         {
             info.clicked();
+            
+            if(isOut[2])
+                btnHover.play();
+            
+            isOut[2]=0;
+            
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                btnClick.play();
+                session = 'i';
+                menuMusic.stop();
+            }
         }
         else
+        {
             info.notClicked();
-
+            isOut[2] = 1;
+        }
+        
+        //Credits Button Hovered or Clicked Actions
         if(credits.frame.getGlobalBounds().contains(mousePos))
         {
-            credits.clicked();  
+            credits.clicked();
+            
+            if(isOut[3])
+                btnHover.play();
+            
+            isOut[3]=0;
+            
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                btnClick.play();
+                session = 'c';
+                menuMusic.stop();
+            }  
         }
         else
+        {
             credits.notClicked();        
+            isOut[3] = 1;
+        }   
     }
 
 
@@ -234,7 +314,7 @@ struct MainMenu
 int main()
 {
     //variable to know which window to render and handle
-    char session='m';
+    char session='d';
 
     //Creating window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
@@ -275,7 +355,7 @@ int main()
         //Logic
         switch (session)
         {
-        case 'm':
+        case 'd':
             menu.Logic(window, session);
             break;
         case 's':
@@ -290,7 +370,7 @@ int main()
         
         switch (session)
         {
-        case 'm':
+        case 'd':
             menu.render(window, background);
             break;
         case 's':
