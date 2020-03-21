@@ -153,38 +153,42 @@ struct MainMenu
     //Logic
 
     //When mouse hovers over buttons
-    void blink(sf::Event &e)
+    void blink(sf::RenderWindow &window)
     {   
-        if(newGame.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
+        Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+
+        if(newGame.frame.getGlobalBounds().contains(mousePos))
             newGame.clicked(); 
         else
             newGame.notClicked();
 
-        /*if(coninue.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
+        /*if(coninue.frame.getGlobalBounds().contains(mousePos))
            coninue.clicked(); 
         else
             coninue.notClicked(); */
         
-        if(multi.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
+        if(multi.frame.getGlobalBounds().contains(mousePos))
             multi.clicked(); 
         else
             multi.notClicked();
         
-        if(info.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
+        if(info.frame.getGlobalBounds().contains(mousePos))
             info.clicked(); 
         else
             info.notClicked();
         
-        if(credits.frame.getGlobalBounds().contains(e.mouseMove.x, e.mouseMove.y))
+        if(credits.frame.getGlobalBounds().contains(mousePos))
             credits.clicked(); 
         else
             credits.notClicked();        
     }
 
     //Moving Cursor with mouse position
-    void moveCursor(sf::Event &e)
+    void moveCursor(sf::RenderWindow &window)
     {
-        cursor.setPosition(e.mouseMove.x, e.mouseMove.y);
+        Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+
+        cursor.setPosition(mousePos);
     }
 
     //Rendering
@@ -227,12 +231,12 @@ int main()
             }
         }
         //Logic
-        menu.blink(e);
-        menu.moveCursor(e);
+        menu.blink(window);
+        menu.moveCursor(window);
 
         //Rendering
         window.clear();
-        menu.render(window);    
+        menu.render(window);
         window.display();
     }
 
