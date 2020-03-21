@@ -22,33 +22,27 @@ struct SinglePlayer
         g1.loadFromFile("Data/Images/Goal1.png");
         g2.loadFromFile("Data/Images/Goal2.png");
 
-        // Sprites
-        Sprite player1(p1);
-        Sprite player2(p2);
-        Sprite background(back);
-        Sprite ball(ballT);
-        Sprite goal1(g1);
-        Sprite goal2(g2);
+        // Sprites 
         sf::Sprite player1(p1), player2(p2), background(back), ball(ballT), goal1(g1), goal2(g2);
     }
 
     void setOrigin() {
-        ball.setOrigin(25, 25);
-        player1.setOrigin(35, 35);
-        player2.setOrigin(35, 35);
-        goal1.setOrigin(50, 90);
-        goal2.setOrigin(50, 90);
+        ball.setOrigin(Vector2f(25, 25));
+        player1.setOrigin(Vector2f(35, 35));
+        player2.setOrigin(Vector2f(35, 35));
+        goal1.setOrigin(Vector2f(50, 90));
+        goal2.setOrigin(Vector2f(50, 90));
     }
 
     void Position() {
-        ball.setPosition(500, 100);
-        player1.setPosition(120, 550);
-        player2.setPosition(880, 550);
-        goal1.setPosition(50, 500);
-        goal2.setPosition(950, 500);
+        ball.setPosition(Vector2f(500, 100));
+        player1.setPosition(Vector2f(120, 550));
+        player2.setPosition(Vector2f(880, 550));
+        goal1.setPosition(Vector2f(50, 500));
+        goal2.setPosition(Vector2f(950, 500));
     }
 
-    void Movement() {
+    /*void Movement() {
         if (Keyboard::isKeyPressed(Keyboard::Key::Left))
             player1.move(-0.1f, 0.0f);
         if (Keyboard::isKeyPressed(Keyboard::Key::Right))
@@ -58,8 +52,8 @@ struct SinglePlayer
         if (Keyboard::isKeyPressed(Keyboard::Key::Down))
             player1.move(0.0f, 0.1f);
     }
-
-    void render(sf::RenderWindow& window)
+    */
+    void render(sf::RenderWindow &window)
     {
         window.draw(background);
         window.draw(ball);
