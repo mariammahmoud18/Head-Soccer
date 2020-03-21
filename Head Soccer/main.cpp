@@ -7,12 +7,6 @@
 #define screenWidth 1000
 #define screenHeight 650
 
-//Background
-sf::Texture backgroundTexture;
-sf::Sprite background;
-
-//variable to know which window to render and handle
-char session='m';
 
 struct SinglePlayer
 {
@@ -65,7 +59,7 @@ struct SinglePlayer
             player1.move(0.0f, -0.9f);
     }
     
-    void render(sf::RenderWindow &window)
+    void render(sf::RenderWindow &window, sf::Sprite &background)
     {
         window.draw(background);
         window.draw(ball);
@@ -170,7 +164,7 @@ struct MainMenu
     //Logic
 
     //When mouse hovers over buttons
-    void Logic(sf::RenderWindow &window)
+    void Logic(sf::RenderWindow &window, char &session)
     {   
         sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
@@ -226,7 +220,7 @@ struct MainMenu
     }
 
     //Rendering
-    void render(sf::RenderWindow &window)
+    void render(sf::RenderWindow &window,sf::Sprite &background)
     {
         window.draw(background);
         newGame.render(window);
@@ -239,10 +233,17 @@ struct MainMenu
 
 int main()
 {
+    //variable to know which window to render and handle
+    char session='m';
+
     //Creating window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
+    
+    //Background
+    sf::Texture backgroundTexture;
+    sf::Sprite background;
     
     //Create Background
     backgroundTexture.loadFromFile("Data/Images/Background1.jpg");
@@ -275,7 +276,7 @@ int main()
         switch (session)
         {
         case 'm':
-            menu.Logic(window);
+            menu.Logic(window, session);
             break;
         case 's':
             NewGame.Logic();
@@ -290,10 +291,10 @@ int main()
         switch (session)
         {
         case 'm':
-            menu.render(window);
+            menu.render(window, background);
             break;
         case 's':
-            NewGame.render(window);
+            NewGame.render(window, background);
             break;
         }
         
