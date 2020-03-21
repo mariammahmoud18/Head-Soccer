@@ -24,7 +24,7 @@ struct Button
     }
     void notClicked()
     {
-         frame.setTextureRect(sf::IntRect(size.x + 12,0,size.x - 15,size.y - 10));
+         frame.setTextureRect(sf::IntRect(size.x + 12,0,size.x - 20,size.y - 10));
     }
 
     void create(sf::Vector2f pos,std::string x,float shift = 0)
@@ -75,7 +75,7 @@ struct MainMenu
         //Create Cursor
         cursorTexture.loadFromFile("Data/Images/cursor.png");
         cursor.setTexture(cursorTexture);
-        cursor.setOrigin(cursorTexture.getSize().x / 3, cursorTexture.getSize().y / 3);
+        cursor.setOrigin(cursorTexture.getSize().x / 7, 4);
         cursor.setScale(0.08,0.08);
 
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
