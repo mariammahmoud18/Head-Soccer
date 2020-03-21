@@ -75,7 +75,6 @@ struct Button
     sf::Font BtnFont;
     sf::Sprite frame;
     sf::Text title;
-    sf::Music btnHover, btnClick;
 
     void lock()
     {
@@ -84,7 +83,6 @@ struct Button
     void clicked()
     {
         frame.setTextureRect(sf::IntRect(0,0,size.x - 27,size.y));
-        btnHover.play();
     }
     void notClicked()
     {
@@ -110,9 +108,6 @@ struct Button
         title.setPosition(frame.getPosition().x - (size.x / 6) - shift, frame.getPosition().y - (size.y / 5));
         title.setString(x);
         
-        //Music of Button
-        btnHover.openFromFile("Data/Sounds/btnHover.wav");
-        btnClick.openFromFile("Data/Sounds/btnClick.wav");
     }
 
     void render(sf::RenderWindow &window)
@@ -125,18 +120,9 @@ struct Button
 struct MainMenu
 {   
     //Music
-    sf::Music menuMusic; // , btnHover, btnClick;
+    sf::Music menuMusic, btnHover, btnClick;
 
-    void loadMusic()
-    {
-        menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
-        //btnHover.openFromFile("Data/Sounds/btnHover.wav");
-        //btnClick.openFromFile("Data/Sounds/btnClick.wav");
-    }
-
-    void playMusic() {
-        menuMusic.play();
-    }
+    bool entered=0;
 
     //Buttons
     Button newGame, coninue, multi, info, credits;
@@ -148,6 +134,12 @@ struct MainMenu
     //Cursor
     sf::Texture cursorTexture;
     sf::Sprite cursor;
+
+    //Play Music
+    void playMusic() 
+    {
+        menuMusic.play();
+    }
 
     //Creating Objects
     void create()
@@ -168,6 +160,12 @@ struct MainMenu
         info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Instructions", 50);
         credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Credits", 7);    
         //coninue.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Continue", 26);
+
+        //Load Music
+        menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
+        btnHover.openFromFile("Data/Sounds/btnHover.wav");
+        btnClick.openFromFile("Data/Sounds/btnClick.wav");
+
     }
 
     //Logic
@@ -178,7 +176,10 @@ struct MainMenu
         Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
         if(newGame.frame.getGlobalBounds().contains(mousePos))
+        {
             newGame.clicked(); 
+            entered=1;
+        }
         else
             newGame.notClicked();
 
@@ -188,19 +189,33 @@ struct MainMenu
             coninue.notClicked(); */
         
         if(multi.frame.getGlobalBounds().contains(mousePos))
+        {
             multi.clicked(); 
+            entered=1;
+        }
         else
             multi.notClicked();
         
         if(info.frame.getGlobalBounds().contains(mousePos))
+        {
             info.clicked(); 
+            entered=1;
+        }
         else
             info.notClicked();
         
         if(credits.frame.getGlobalBounds().contains(mousePos))
+        {
             credits.clicked(); 
+            entered=1;    
+        }
         else
             credits.notClicked();        
+        if(entered)
+        {
+            btnHover.play();
+            entered=0;
+        }
     }
 
     //Moving Cursor with mouse position
