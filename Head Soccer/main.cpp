@@ -122,8 +122,6 @@ struct MainMenu
     //Music
     sf::Music menuMusic, btnHover, btnClick;
 
-    bool entered=0;
-
     //Buttons
     Button newGame, coninue, multi, info, credits;
 
@@ -177,8 +175,7 @@ struct MainMenu
 
         if(newGame.frame.getGlobalBounds().contains(mousePos))
         {
-            newGame.clicked(); 
-            entered=1;
+            newGame.clicked();
         }
         else
             newGame.notClicked();
@@ -190,32 +187,24 @@ struct MainMenu
         
         if(multi.frame.getGlobalBounds().contains(mousePos))
         {
-            multi.clicked(); 
-            entered=1;
+            multi.clicked();
         }
         else
             multi.notClicked();
         
         if(info.frame.getGlobalBounds().contains(mousePos))
         {
-            info.clicked(); 
-            entered=1;
+            info.clicked();
         }
         else
             info.notClicked();
-        
+
         if(credits.frame.getGlobalBounds().contains(mousePos))
         {
-            credits.clicked(); 
-            entered=1;    
+            credits.clicked();  
         }
         else
             credits.notClicked();        
-        if(entered)
-        {
-            btnHover.play();
-            entered=0;
-        }
     }
 
     //Moving Cursor with mouse position
