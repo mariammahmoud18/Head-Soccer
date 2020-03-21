@@ -120,11 +120,13 @@ struct Button
 struct MainMenu
 {   
     //Music
-    sf::Music menuMusic;
+    sf::Music menuMusic,btnHover,btnClick;
 
     void loadMusic()
     {
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
+        btnHover.openFromFile("Data/Sounds/btnHover.wav");
+        btnClick.openFromFile("Data/Sounds/btnClick.wav");
     }
 
     void playMusic() {
