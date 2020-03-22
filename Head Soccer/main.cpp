@@ -179,11 +179,8 @@ struct MainMenu
     //Logic
 
     //When mouse hovers over buttons
-    void Logic(sf::RenderWindow &window, char &session)
+    void Logic(sf::RenderWindow &window, char &session,sf::Vector2f &mousePos)
     {   
-        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-
-
         //Single Player Button Hovered or Clicked Actions
         if(newGame.frame.getGlobalBounds().contains(mousePos))
         {   
@@ -293,10 +290,8 @@ struct MainMenu
 
 
     //Moving Cursor with mouse position
-    void moveCursor(sf::RenderWindow &window)
+    void moveCursor(sf::Vector2f &mousePos)
     {
-        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-
         cursor.setPosition(mousePos);
     }
 
@@ -335,9 +330,10 @@ void loadScreen(sf::RenderWindow &window)
 
 int main()
 {
-    //variable to know which window to render and handle
-    char session='d';
-    
+    //variables
+    char session='d'; // to know which window to render and handle
+    sf::Vector2f mousePos; //to save current mouse position
+
     //Creating window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
@@ -375,20 +371,23 @@ int main()
                 case sf::Event::Closed:
                     window.close();
                     break;
+                case sf::Event::MouseMoved:
+                    mousePos = sf::Vector2f(e.mouseMove.x, e.mouseMove.y);
+                    break;
             }
         }
         //Logic
         switch (session)
         {
         case 'd':
-            menu.Logic(window, session);
+            menu.Logic(window, session, mousePos);
             break;
         case 's':
             SinglePlayer.Logic();
             break;
         }
-
-        menu.moveCursor(window);
+        //Move Cursor with the mouse
+        menu.moveCursor(mousePos);
 
         //Rendering
         window.clear();
