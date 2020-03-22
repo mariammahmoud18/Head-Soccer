@@ -84,11 +84,11 @@ struct Button
     {
         frame.setTextureRect(sf::IntRect(size.x * 2 + 30,0,size.x - 28,size.y));
     }
-    void clicked()
+    void notClicked()
     {
         frame.setTextureRect(sf::IntRect(0,0,size.x - 27,size.y));
     }
-    void notClicked()
+    void clicked()
     {
          frame.setTextureRect(sf::IntRect(size.x + 12,0,size.x - 27,size.y));
     }
