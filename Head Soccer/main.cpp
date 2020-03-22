@@ -8,7 +8,7 @@
 #define screenHeight 650
 
 
-struct SinglePlayer
+struct Match
 {
     // Textures declaration
     sf::Texture p1, p2, ballT, g1, g2;
@@ -159,10 +159,10 @@ struct MainMenu
         cursor.setScale(0.08,0.08);
 
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
-        newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 2), "Single Player", 40);
-        multi.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 3), "Multiplayer", 40);
-        info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Instructions", 50);
-        credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Credits", 7);    
+        newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 3), "Single Player", 40);
+        multi.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Multiplayer", 40);
+        info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Instructions", 50);
+        credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Credits", 7);    
         //coninue.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Continue", 26);
 
         //Load and Play Music
@@ -343,8 +343,8 @@ int main()
     menu.create();
 
     //Single Player Session
-    SinglePlayer NewGame;
-    NewGame.Load();
+    Match SinglePlayer;
+    SinglePlayer.Load();
 
     //Game Loop
     while (window.isOpen())
@@ -367,7 +367,7 @@ int main()
             menu.Logic(window, session);
             break;
         case 's':
-            NewGame.Logic();
+            SinglePlayer.Logic();
             break;
         }
 
@@ -382,7 +382,7 @@ int main()
             menu.render(window, background);
             break;
         case 's': //Single Player
-            NewGame.render(window, background);
+            SinglePlayer.render(window, background);
             break;
         case 'm': //Multiplayer
             break;
