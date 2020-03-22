@@ -93,7 +93,7 @@ struct Button
          frame.setTextureRect(sf::IntRect(size.x + 12,0,size.x - 27,size.y));
     }
 
-    void create(sf::Vector2f pos,std::string x,float shift = 0)
+    void create(sf::Vector2f pos,std::string x)
     {
         //Button Style
         frameTexture.loadFromFile("Data/Images/RecButton.png");
@@ -101,17 +101,17 @@ struct Button
         size.x /= 3;
         frame.setTexture(frameTexture);
         notClicked();
+        frame.setScale(1,0.5);
         frame.setOrigin(sf::Vector2f(size.x / 2, size.y / 2));
         frame.setPosition(pos);
-        frame.setScale(1,0.5);
 
         ////Text inside button
         BtnFont.loadFromFile("Data/Fonts/fontBtn.ttf");
         title.setFont(BtnFont);
         title.setCharacterSize(50);
-        title.setPosition(frame.getPosition().x - (size.x / 6) - shift, frame.getPosition().y - (size.y / 5));
         title.setString(x);
-        
+        title.setOrigin(title.getLocalBounds().width /2, title.getGlobalBounds().height / 2);
+        title.setPosition(frame.getPosition().x, frame.getPosition().y - 15);
     }
 
     void render(sf::RenderWindow &window)
@@ -159,11 +159,10 @@ struct MainMenu
         cursor.setScale(0.08,0.08);
 
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
-        newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 3), "Single Player", 40);
-        multi.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Multiplayer", 40);
-        info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Instructions", 50);
-        credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Credits", 7);    
-        //coninue.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Continue", 26);
+        newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 3), "Single Player");
+        multi.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Multiplayer");
+        info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Instructions");
+        credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Credits");    
 
         //Load and Play Music
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
@@ -326,9 +325,9 @@ void loadScreen(sf::RenderWindow &window)
     titlefnt.loadFromFile("Data/Fonts/fontBtn.ttf");
     title.setFont(titlefnt);
     title.setString("Loading");
-    title.setPosition(screenWidth/2,screenHeight/2);
     title.setCharacterSize(100);
     title.setOrigin(title.getGlobalBounds().width / 2,title.getGlobalBounds().height / 2); 
+    title.setPosition(screenWidth/2,screenHeight/2);
     window.clear(sf::Color::Black);
     window.draw(title);
     window.display();
