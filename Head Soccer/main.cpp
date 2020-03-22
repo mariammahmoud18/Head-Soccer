@@ -78,7 +78,7 @@ struct Button
     sf::Sprite frame;
     sf::Text title;
 
-    bool isOut=1;
+    bool inside=0;
 
     void lock()
     {
@@ -187,11 +187,11 @@ struct MainMenu
         //Single Player Button Hovered or Clicked Actions
         if(newGame.frame.getGlobalBounds().contains(mousePos))
         {   
-            if(newGame.isOut)
+            if(!newGame.inside)
             {
                 newGame.clicked();
                 btnHover.play();
-                newGame.isOut=0;
+                newGame.inside=1;
             }
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -203,9 +203,9 @@ struct MainMenu
         }
         else
         {
-            if(!newGame.isOut)
+            if(newGame.inside)
                 newGame.notClicked();
-            newGame.isOut = 1;
+            newGame.inside = 0;
         }
 
         /*if(coninue.frame.getGlobalBounds().contains(mousePos))
@@ -217,11 +217,11 @@ struct MainMenu
         if(multi.frame.getGlobalBounds().contains(mousePos))
         {
 
-            if(multi.isOut)
+            if(!multi.inside)
             {
                 multi.clicked();
                 btnHover.play();
-                multi.isOut=0;
+                multi.inside=1;
             }
             
             
@@ -234,20 +234,20 @@ struct MainMenu
         }
         else
         {
-            if(!multi.isOut)
+            if(multi.inside)
                 multi.notClicked();
-            multi.isOut = 1;
+            multi.inside = 0;
         }
         
         //Instructions Button Hovered or Clicked Actions
         if(info.frame.getGlobalBounds().contains(mousePos))
         {
             
-            if(info.isOut)
+            if(!info.inside)
             {
                 info.clicked();
                 btnHover.play();
-                info.isOut=0;
+                info.inside=1;
             }
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -259,20 +259,20 @@ struct MainMenu
         }
         else
         {
-            if(!info.isOut)
+            if(info.inside)
                 info.notClicked();
-            info.isOut = 1;
+            info.inside = 0;
         }
         
         //Credits Button Hovered or Clicked Actions
         if(credits.frame.getGlobalBounds().contains(mousePos))
         {
             
-            if(credits.isOut)
+            if(!credits.inside)
             {
                 credits.clicked();
                 btnHover.play();
-                credits.isOut=0;
+                credits.inside=1;
             }
             
             
@@ -285,9 +285,9 @@ struct MainMenu
         }
         else
         {
-            if(!credits.isOut)
+            if(credits.inside)
                 credits.notClicked();        
-            credits.isOut = 1;
+            credits.inside = 0;
         }   
     }
 
