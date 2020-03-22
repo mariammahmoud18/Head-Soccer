@@ -78,6 +78,8 @@ struct Button
     sf::Sprite frame;
     sf::Text title;
 
+    bool isOut=1;
+
     void lock()
     {
         frame.setTextureRect(sf::IntRect(size.x * 2 + 30,0,size.x - 28,size.y));
@@ -122,9 +124,6 @@ struct Button
 struct MainMenu
 {   
     /////////////////VARIABLES
-    
-    //did it leave button
-    bool isOut[4] = {1,1,1,1};
     
     //Music
     sf::Music menuMusic;
@@ -188,13 +187,13 @@ struct MainMenu
 
         //Single Player Button Hovered or Clicked Actions
         if(newGame.frame.getGlobalBounds().contains(mousePos))
-        {
-            newGame.clicked();
-            
-            if(isOut[0])
+        {   
+            if(newGame.isOut)
+            {
+                newGame.clicked();
                 btnHover.play();
-            
-            isOut[0]=0;
+                newGame.isOut=0;
+            }
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -205,8 +204,9 @@ struct MainMenu
         }
         else
         {
-            newGame.notClicked();
-            isOut[0] = 1;
+            if(!newGame.isOut)
+                newGame.notClicked();
+            newGame.isOut = 1;
         }
 
         /*if(coninue.frame.getGlobalBounds().contains(mousePos))
@@ -217,12 +217,14 @@ struct MainMenu
         //MultiPlayer Button Hovered or Clicked Actions
         if(multi.frame.getGlobalBounds().contains(mousePos))
         {
-            multi.clicked();
 
-            if(isOut[1])
+            if(multi.isOut)
+            {
+                multi.clicked();
                 btnHover.play();
+                multi.isOut=0;
+            }
             
-            isOut[1]=0;
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -233,19 +235,21 @@ struct MainMenu
         }
         else
         {
-            multi.notClicked();
-            isOut[1] = 1;
+            if(!multi.isOut)
+                multi.notClicked();
+            multi.isOut = 1;
         }
         
         //Instructions Button Hovered or Clicked Actions
         if(info.frame.getGlobalBounds().contains(mousePos))
         {
-            info.clicked();
             
-            if(isOut[2])
+            if(info.isOut)
+            {
+                info.clicked();
                 btnHover.play();
-            
-            isOut[2]=0;
+                info.isOut=0;
+            }
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -256,19 +260,22 @@ struct MainMenu
         }
         else
         {
-            info.notClicked();
-            isOut[2] = 1;
+            if(!info.isOut)
+                info.notClicked();
+            info.isOut = 1;
         }
         
         //Credits Button Hovered or Clicked Actions
         if(credits.frame.getGlobalBounds().contains(mousePos))
         {
-            credits.clicked();
             
-            if(isOut[3])
+            if(credits.isOut)
+            {
+                credits.clicked();
                 btnHover.play();
+                credits.isOut=0;
+            }
             
-            isOut[3]=0;
             
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -279,8 +286,9 @@ struct MainMenu
         }
         else
         {
-            credits.notClicked();        
-            isOut[3] = 1;
+            if(!credits.isOut)
+                credits.notClicked();        
+            credits.isOut = 1;
         }   
     }
 
@@ -370,11 +378,17 @@ int main()
         
         switch (session)
         {
-        case 'd':
+        case 'd': //Default which is main menu
             menu.render(window, background);
             break;
-        case 's':
+        case 's': //Single Player
             NewGame.render(window, background);
+            break;
+        case 'm': //Multiplayer
+            break;
+        case 'i': //Instructions
+            break;
+        case 'c': //Credits
             break;
         }
         
