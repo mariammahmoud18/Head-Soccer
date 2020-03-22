@@ -319,16 +319,34 @@ struct MainMenu
     }
 };
 
+void loadScreen(sf::RenderWindow &window)
+{
+    sf::Text title;
+    sf::Font titlefnt;
+    titlefnt.loadFromFile("Data/Fonts/fontBtn.ttf");
+    title.setFont(titlefnt);
+    title.setString("Loading");
+    title.setPosition(screenWidth/2,screenHeight/2);
+    title.setCharacterSize(100);
+    title.setOrigin(title.getGlobalBounds().width / 2,title.getGlobalBounds().height / 2); 
+    window.clear(sf::Color::Black);
+    window.draw(title);
+    window.display();
+}
+
 int main()
 {
     //variable to know which window to render and handle
     char session='d';
-
+    
     //Creating window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Head Soccer", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
     
+    //Loading Screen till Resources Loads
+    loadScreen(window);
+
     //Background
     sf::Texture backgroundTexture;
     sf::Sprite background;
