@@ -73,7 +73,7 @@ struct Match
 struct Button
 {
     sf::Texture frameTexture;
-    sf::Vector2u size;
+    sf::Vector2f size;
     sf::Font BtnFont;
     sf::Sprite frame;
     sf::Text title;
@@ -82,27 +82,27 @@ struct Button
 
     void lock()
     {
-        frame.setTextureRect(sf::IntRect(size.x * 2 + 30,0,size.x - 28,size.y));
+        frame.setTextureRect(sf::IntRect(static_cast<int>(size.x) * 2 + 30,0, static_cast<int>(size.x) - 28, static_cast<int>(size.y)));
     }
     void notClicked()
     {
-        frame.setTextureRect(sf::IntRect(0,0,size.x - 27,size.y));
+        frame.setTextureRect(sf::IntRect(0,0, static_cast<int>(size.x) - 27, static_cast<int>(size.y)));
     }
     void clicked()
     {
-         frame.setTextureRect(sf::IntRect(size.x + 12,0,size.x - 27,size.y));
+         frame.setTextureRect(sf::IntRect(static_cast<int>(size.x) + 12,0, static_cast<int>(size.x) - 27, static_cast<int>(size.y)));
     }
 
     void create(sf::Vector2f pos,std::string x)
     {
         //Button Style
         frameTexture.loadFromFile("Data/Images/RecButton.png");
-        size = frameTexture.getSize();
+        size = sf::Vector2f(static_cast<float>(frameTexture.getSize().x), static_cast<float>(frameTexture.getSize().y));
         size.x /= 3;
         frame.setTexture(frameTexture);
         notClicked();
         frame.setScale(1,0.5);
-        frame.setOrigin(sf::Vector2f(size.x / 2, size.y / 2));
+        frame.setOrigin(sf::Vector2f(size.x / 2.0f, size.y / 2.0f));
         frame.setPosition(pos);
 
         ////Text inside button
@@ -155,8 +155,8 @@ struct MainMenu
         //Create Cursor
         cursorTexture.loadFromFile("Data/Images/cursor.png");
         cursor.setTexture(cursorTexture);
-        cursor.setOrigin(cursorTexture.getSize().x / 7, 4);
-        cursor.setScale(0.08,0.08);
+        cursor.setOrigin(cursorTexture.getSize().x / 7.0f, 4.0f);
+        cursor.setScale(0.08f,0.08f);
 
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
         newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 3), "Single Player");
@@ -372,7 +372,7 @@ int main()
                     window.close();
                     break;
                 case sf::Event::MouseMoved:
-                    mousePos = sf::Vector2f(e.mouseMove.x, e.mouseMove.y);
+                    mousePos = sf::Vector2f(static_cast<float>(e.mouseMove.x), static_cast<float>(e.mouseMove.y));
                     break;
             }
         }
