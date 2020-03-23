@@ -7,69 +7,6 @@
 #define screenWidth 1000
 #define screenHeight 650
 
-
-struct Match
-{
-    // Textures declaration
-    sf::Texture p1, p2, ballT, g1, g2;
-
-    // Sprites declaration
-    sf::Sprite player1, player2, ball, goal1, goal2;
-
-    void Load()
-    {
-        // Textures
-        p1.loadFromFile("Data/Images/Head1.png");
-        p2.loadFromFile("Data/Images/Head2.png");
-        g1.loadFromFile("Data/Images/Goal1.png");
-        g2.loadFromFile("Data/Images/Goal2.png");
-        ballT.loadFromFile("Data/Images/ball.png");
-
-        // Sprites 
-        player1.setTexture(p1);
-        player2.setTexture(p2);
-        ball.setTexture(ballT);
-        goal1.setTexture(g1);
-        goal2.setTexture(g2);
-
-        //Set Origin
-        ball.setOrigin(sf::Vector2f(25, 25));
-        player1.setOrigin(sf::Vector2f(35, 35));
-        player2.setOrigin(sf::Vector2f(35, 35));
-        goal1.setOrigin(sf::Vector2f(50, 90));
-        goal2.setOrigin(sf::Vector2f(50, 90));
-
-        //Set Position
-        ball.setPosition(sf::Vector2f(500, 100));
-        player1.setPosition(sf::Vector2f(120, 550));
-        player2.setPosition(sf::Vector2f(880, 550));
-        goal1.setPosition(sf::Vector2f(50, 500));
-        goal2.setPosition(sf::Vector2f(950, 500));
-
-    }   
-
-    void Logic()
-    {
-        // Keyboard Movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-            player1.move(-0.9f, 0.0f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-            player1.move(0.9f, 0.0f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-            player1.move(0.0f, -0.9f);
-    }
-    
-    void render(sf::RenderWindow &window, sf::Sprite &background)
-    {
-        window.draw(background);
-        window.draw(ball);
-        window.draw(player1);
-        window.draw(player2);
-        window.draw(goal1);
-        window.draw(goal2);
-    }
-};
-
 struct Button
 {
     sf::Texture frameTexture;
@@ -239,6 +176,68 @@ struct MainMenu
     }
 };
 
+struct Match
+{
+    // Textures declaration
+    sf::Texture p1, p2, ballT, g1, g2;
+
+    // Sprites declaration
+    sf::Sprite player1, player2, ball, goal1, goal2;
+
+    void Load()
+    {
+        // Textures
+        p1.loadFromFile("Data/Images/Head1.png");
+        p2.loadFromFile("Data/Images/Head2.png");
+        g1.loadFromFile("Data/Images/Goal1.png");
+        g2.loadFromFile("Data/Images/Goal2.png");
+        ballT.loadFromFile("Data/Images/ball.png");
+
+        // Sprites 
+        player1.setTexture(p1);
+        player2.setTexture(p2);
+        ball.setTexture(ballT);
+        goal1.setTexture(g1);
+        goal2.setTexture(g2);
+
+        //Set Origin
+        ball.setOrigin(sf::Vector2f(25, 25));
+        player1.setOrigin(sf::Vector2f(35, 35));
+        player2.setOrigin(sf::Vector2f(35, 35));
+        goal1.setOrigin(sf::Vector2f(50, 90));
+        goal2.setOrigin(sf::Vector2f(50, 90));
+
+        //Set Position
+        ball.setPosition(sf::Vector2f(500, 100));
+        player1.setPosition(sf::Vector2f(120, 550));
+        player2.setPosition(sf::Vector2f(880, 550));
+        goal1.setPosition(sf::Vector2f(50, 500));
+        goal2.setPosition(sf::Vector2f(950, 500));
+
+    }   
+
+    void Logic()
+    {
+        // Keyboard Movement
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+            player1.move(-0.9f, 0.0f);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+            player1.move(0.9f, 0.0f);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+            player1.move(0.0f, -0.9f);
+    }
+    
+    void render(sf::RenderWindow &window, sf::Sprite &background)
+    {
+        window.draw(background);
+        window.draw(ball);
+        window.draw(player1);
+        window.draw(player2);
+        window.draw(goal1);
+        window.draw(goal2);
+    }
+};
+
 void loadScreen(sf::RenderWindow &window)
 {
     sf::Text title;
@@ -282,8 +281,8 @@ int main()
     menu.create();
 
     //Single Player Session
-    Match SinglePlayer;
-    SinglePlayer.Load();
+    Match Game;
+    Game.Load();
 
     //Game Loop
     while (window.isOpen())
@@ -309,7 +308,7 @@ int main()
             menu.Logic(window, session, mousePos);
             break;
         case 's':
-            SinglePlayer.Logic();
+            Game.Logic();
             break;
         }
         //Move Cursor with the mouse
@@ -324,7 +323,7 @@ int main()
             menu.render(window, background);
             break;
         case 's': //Single Player
-            SinglePlayer.render(window, background);
+            Game.render(window, background);
             break;
         case 'm': //Multiplayer
             break;
