@@ -51,7 +51,7 @@ struct Button
         title.setPosition(frame.getPosition().x, frame.getPosition().y - 15);
     }
 
-    void render(sf::RenderWindow &window)
+    void render(sf::RenderWindow& window)
     {
         window.draw(frame);
         window.draw(title);
@@ -117,7 +117,7 @@ struct MainMenu
     //Logic
 
     //When mouse hovers over buttons
-    void Logic(sf::RenderWindow &window, char &session,sf::Vector2f &mousePos)
+    void Logic(sf::RenderWindow& window, char& session,sf::Vector2f& mousePos)
     {   
         //Single Player Button Hovered or Clicked Actions
 
@@ -152,19 +152,19 @@ struct MainMenu
     }
 
     //Moving Cursor with mouse position
-    void moveCursor(sf::Vector2f &mousePos)
+    void moveCursor(sf::Vector2f& mousePos)
     {
         cursor.setPosition(mousePos);
     }
 
     //Render Cursor
-    void renderCursor(sf::RenderWindow &window)
+    void renderCursor(sf::RenderWindow& window)
     {
         window.draw(cursor);
     }
 
     //Rendering
-    void render(sf::RenderWindow &window,sf::Sprite &background)
+    void render(sf::RenderWindow& window,sf::Sprite& background)
     {
         window.draw(background);
         for (int i = 0; i < noOfBtns; i++)
@@ -178,11 +178,22 @@ struct MainMenu
 
 struct Match
 {
+    ////VARIABLES
+    
+    //Movement Booleans
+        bool up=0,down=0,right=0,left=0;
+    
     // Textures declaration
     sf::Texture p1, p2, ballT, g1, g2;
 
     // Sprites declaration
     sf::Sprite player1, player2, ball, goal1, goal2;
+
+    //Bodies Velcoity
+    sf::Vector2f player1V;
+    sf::Vector2f ballV;
+
+    ////FUNCTIONS
 
     void Load()
     {
@@ -215,19 +226,35 @@ struct Match
         goal2.setPosition(sf::Vector2f(950, 500));
 
     }   
-
-    void Logic()
+    
+    //Logic
+    
+    void SingleLogic()
     {
-        // Keyboard Movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-            player1.move(-0.9f, 0.0f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-            player1.move(0.9f, 0.0f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-            player1.move(0.0f, -0.9f);
+        //Movement Control
+        if(up) player1V.y = -5.0f;
+        if(down) player1V.y = 5.0f;
+        if(right) player1V.x = 5.0f;
+        if(left) player1V.x = -5.0f;
+        
+        if( !(up || down) ) player1V.y = 0;
+        if( !(right || left) ) player1V.x = 0;
+
+        //Movement Action
+        player1.move(player1V.x, 0);
+
+        if(player1.getGlobalBounds().intersects(ball.getGlobalBounds())) //Collision with Ball
+            player1.move(-player1V.x,0); //Move in other direction
+        
+        player1.move(0, player1V.y);
+
+        if(player1.getGlobalBounds().intersects(ball.getGlobalBounds())) //Collision with Ball
+            player1.move(0,-player1V.y); //Move in other direction
+
     }
     
-    void render(sf::RenderWindow &window, sf::Sprite &background)
+    //Rendering
+    void render(sf::RenderWindow& window, sf::Sprite& background)
     {
         window.draw(background);
         window.draw(ball);
@@ -238,7 +265,7 @@ struct Match
     }
 };
 
-void loadScreen(sf::RenderWindow &window)
+void loadScreen(sf::RenderWindow& window)
 {
     sf::Text title;
     sf::Font titlefnt;
@@ -299,6 +326,42 @@ int main()
                 case sf::Event::MouseMoved:
                     mousePos = sf::Vector2f(static_cast<float>(e.mouseMove.x), static_cast<float>(e.mouseMove.y));
                     break;
+                case sf::Event::KeyPressed:
+                    switch (e.key.code)
+                    {
+                    case sf::Keyboard::Up:
+                        Game.up=1;
+                        break;
+                    case sf::Keyboard::Down:
+                        Game.down=1;
+                        break;
+                    case sf::Keyboard::Right:
+                        Game.right=1;
+                        break;
+                    case sf::Keyboard::Left:
+                        Game.left=1;
+                        break;
+                    
+                    }
+                    break;
+                case sf::Event::KeyReleased:
+                    switch (e.key.code)
+                    {
+                    case sf::Keyboard::Up:
+                        Game.up=0;
+                        break;
+                    case sf::Keyboard::Down:
+                        Game.down=0;
+                        break;
+                    case sf::Keyboard::Right:
+                        Game.right=0;
+                        break;
+                    case sf::Keyboard::Left:
+                        Game.left=0;
+                        break;
+                    
+                    }
+                    break;
             }
         }
         //Logic
@@ -308,7 +371,7 @@ int main()
             menu.Logic(window, session, mousePos);
             break;
         case 's':
-            Game.Logic();
+            Game.SingleLogic();
             break;
         }
         //Move Cursor with the mouse
