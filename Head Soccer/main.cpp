@@ -133,9 +133,10 @@ struct MainMenu
     sf::Sound btnHover, btnClick;
 
     //Buttons
-    Button newGame, coninue, multi, info, credits;
-
-
+    static const int noOfBtns=4;
+    Button btn[noOfBtns];
+    std::string btnTitle[noOfBtns] ={"Single Player", "Multiplayer", "Instructions", "Credits"};
+    char btnSession[noOfBtns] = {'s', 'm', 'i', 'c'};
     //Cursor
     sf::Texture cursorTexture;
     sf::Sprite cursor;
@@ -159,10 +160,10 @@ struct MainMenu
         cursor.setScale(0.08f,0.08f);
 
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
-        newGame.create(sf::Vector2f(screenWidth / 8 * 4, screenHeight /7 * 3), "Single Player");
-        multi.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 4), "Multiplayer");
-        info.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 5), "Instructions");
-        credits.create(sf::Vector2f(screenWidth /8 * 4, screenHeight /7 * 6), "Credits");    
+        for (char i = 0; i < 4; i++)
+        {
+            btn[i].create(sf::Vector2f(screenWidth /8 * 4, screenHeight /6.5 * (i+3) ), btnTitle[i]);
+        }
 
         //Load and Play Music
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
@@ -182,112 +183,36 @@ struct MainMenu
     void Logic(sf::RenderWindow &window, char &session,sf::Vector2f &mousePos)
     {   
         //Single Player Button Hovered or Clicked Actions
-        if(newGame.frame.getGlobalBounds().contains(mousePos))
-        {   
-            if(!newGame.inside)
-            {
-                newGame.clicked();
-                btnHover.play();
-                newGame.inside=1;
-            }
-            
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                btnClick.play();
-                session = 's';
-                menuMusic.stop();
-            }
-        }
-        else
-        {
-            if(newGame.inside)
-                newGame.notClicked();
-            newGame.inside = 0;
-        }
 
-        /*if(coninue.frame.getGlobalBounds().contains(mousePos))
-           coninue.clicked(); 
-        else
-            coninue.notClicked(); */
-        
-        //MultiPlayer Button Hovered or Clicked Actions
-        if(multi.frame.getGlobalBounds().contains(mousePos))
+        for (int i = 0; i < noOfBtns; i++)
         {
-
-            if(!multi.inside)
+            if(btn[i].frame.getGlobalBounds().contains(mousePos))
             {
-                multi.clicked();
-                btnHover.play();
-                multi.inside=1;
+                if (!btn[i].inside)
+                {
+                    btn[i].clicked();
+                    btnHover.play();
+                    btn[i].inside = 1;
+                }
+                
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                {
+                    btnClick.play();
+                    session = btnSession[i];
+                    menuMusic.stop();
+                }
+                
+            }
+            else
+            {
+                if (btn[i].inside)
+                    btn[i].notClicked();
+                btn[i].inside = 0;
+                
             }
             
-            
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                btnClick.play();
-                session = 'm';
-                menuMusic.stop();
-            }
         }
-        else
-        {
-            if(multi.inside)
-                multi.notClicked();
-            multi.inside = 0;
-        }
-        
-        //Instructions Button Hovered or Clicked Actions
-        if(info.frame.getGlobalBounds().contains(mousePos))
-        {
-            
-            if(!info.inside)
-            {
-                info.clicked();
-                btnHover.play();
-                info.inside=1;
-            }
-            
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                btnClick.play();
-                session = 'i';
-                menuMusic.stop();
-            }
-        }
-        else
-        {
-            if(info.inside)
-                info.notClicked();
-            info.inside = 0;
-        }
-        
-        //Credits Button Hovered or Clicked Actions
-        if(credits.frame.getGlobalBounds().contains(mousePos))
-        {
-            
-            if(!credits.inside)
-            {
-                credits.clicked();
-                btnHover.play();
-                credits.inside=1;
-            }
-            
-            
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                btnClick.play();
-                session = 'c';
-                menuMusic.stop();
-            }  
-        }
-        else
-        {
-            if(credits.inside)
-                credits.notClicked();        
-            credits.inside = 0;
-        }   
     }
-
 
     //Moving Cursor with mouse position
     void moveCursor(sf::Vector2f &mousePos)
@@ -305,10 +230,11 @@ struct MainMenu
     void render(sf::RenderWindow &window,sf::Sprite &background)
     {
         window.draw(background);
-        newGame.render(window);
-        multi.render(window);
-        info.render(window);
-        credits.render(window);
+        for (int i = 0; i < noOfBtns; i++)
+        {
+            btn[i].render(window);
+        }
+        
         // coninue.render(window);
     }
 };
