@@ -35,6 +35,97 @@ struct Gravity
 
 };
 
+struct Player
+{
+    //Movement Booleans
+    bool up=0,down=0,right=0,left=0;
+    
+    sf::Texture texture;
+    sf::Sprite character;
+
+    sf::Vector2f velocity;
+
+    void create(std::string path,sf::Vector2f pos)
+    {
+        texture.loadFromFile(path);
+        character.setTexture(texture);
+        character.setPosition(pos);
+        character.setOrigin(character.getGlobalBounds().width / 2,character.getGlobalBounds().height / 2);
+    }
+
+    void move()
+    {
+        velocity = sf::Vector2f();
+
+        //Player1 COntrols
+        if(up && character.getPosition().y - character.getGlobalBounds().height / 2 > 410)
+			velocity.y -= 5.0f;
+		else up =0;
+
+        if(down) velocity.y = 5.0f;
+        if(right) velocity.x = 5.0f;
+        if(left) velocity.x = -5.0f;
+
+        if( !(right || left) ) velocity.x = 0;
+
+        //Movement Action
+        character.move(velocity);
+    }
+
+    void stopCollision(sf::Sprite& body)
+    {
+        //Collisions
+        if(character.getGlobalBounds().intersects(body.getGlobalBounds())) //Collision with Ball
+        {
+            character.move(-velocity); //Stop Player
+        }
+    }
+    
+    //pressed button
+    void upPressed(sf::RectangleShape& ground)
+    {
+        if(character.getPosition().y + character.getGlobalBounds().height /2 >= ground.getPosition().y - ground.getGlobalBounds().height /2)
+            up=1;
+    }
+
+    void downPressed()
+    {
+        down=1;
+    }
+
+    void rightPressed()
+    {
+        right=1;
+    }
+
+    void leftPressed()
+    {
+        left=1;
+    }
+
+    //Released button
+
+    void upRealesed(sf::RectangleShape& ground)
+    {
+        up=0;
+    }
+
+    void downRealesed()
+    {
+        down=0;
+    }
+
+    void rightRealesed()
+    {
+        right=0;
+    }
+
+    void leftRealesed()
+    {
+        left=0;
+    }
+};
+
 struct Button
 {
     sf::Texture frameTexture;
@@ -127,7 +218,7 @@ struct MainMenu
         //Load and Play Music
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
         menuMusic.setLoop(true);
-        //menuMusic.play();
+        menuMusic.play();
 
         //Load Sounds
         btnHoverbufr.loadFromFile("Data/Sounds/btnHover.wav");
@@ -141,7 +232,7 @@ struct MainMenu
     //When mouse hovers over buttons
     void Logic(sf::RenderWindow& window, char& session,sf::Vector2f& mousePos)
     {   
-        //Single Player Button Hovered or Clicked Actions
+        //Buttons Hovered or Clicked Actions
 
         for (int i = 0; i < noOfBtns; i++)
         {
@@ -189,33 +280,27 @@ struct MainMenu
     void render(sf::RenderWindow& window,sf::Sprite& background)
     {
         window.draw(background);
+
         for (int i = 0; i < noOfBtns; i++)
         {
             btn[i].render(window);
         }
-        
-        // coninue.render(window);
     }
 };
 
 struct Match
 {
     ////VARIABLES
-    
-    //Movement Booleans
-    bool up=0,down=0,right=0,left=0;
 
     // Textures declaration
-    sf::Texture p1, p2, ballT, g1, g2;
+    sf::Texture g1,g2,ballT;
 
     // Bodies declaration
-    sf::Sprite player1, player2, ball, goal1, goal2;
+    sf::Sprite ball, goal1, goal2;
     sf::RectangleShape ground;
-
-    //Bodies Velcoity
-    sf::Vector2f player1V, player2V, ballV;
+    Player player1,player2;
     
-    //Bodies gravity
+    // gravity
     Gravity playersG,ballG;
 
     ////FUNCTIONS
@@ -229,15 +314,8 @@ struct Match
         ground.setFillColor(sf::Color::Transparent);
         
         // Players
-        p1.loadFromFile("Data/Images/Head1.png");
-        player1.setTexture(p1);
-        player1.setOrigin(sf::Vector2f(35, 35));
-        player1.setPosition(sf::Vector2f(120, 100));
-         
-        p2.loadFromFile("Data/Images/Head2.png");
-        player2.setTexture(p2);
-        player2.setOrigin(sf::Vector2f(35, 35));
-        player2.setPosition(sf::Vector2f(880, 550));
+        player1.create("Data/Images/Head1.png", sf::Vector2f(120, 100));
+        player2.create("Data/Images/Head2.png", sf::Vector2f(880, 550));
         
         playersG.setGround(ground, 5.0f);
         
@@ -262,45 +340,24 @@ struct Match
     }   
     
     //Logic
-    
-    void jump()
-    {
-        if(player1.getPosition().y + player1.getGlobalBounds().height /2 >= ground.getPosition().y - ground.getGlobalBounds().height /2)
-            up=1;
-    }
 
     void SingleLogic()
     {
-        player1V =sf::Vector2f(0,0);
-        player2V =sf::Vector2f(0,0);
-        ballV =sf::Vector2f(0,0);
+        sf::Vector2f ballV;
 
         //Movement Control
-
-        //Player1 COntrols
-        if(up && player1.getPosition().y - player1.getGlobalBounds().height / 2 > 410)
-			player1V.y -= 5.0f;
-		else up =0;
-        if(down) player1V.y = 5.0f;
-        if(right) player1V.x = 5.0f;
-        if(left) player1V.x = -5.0f;
-        
-        if( !(right || left) ) player1V.x = 0;
-
-        //Movement Action
-        player1.move(player1V);
+        player1.move();
+        player2.move();
 
         //Gravity
-        playersG.activate(player1,player1V);
-        playersG.activate(player2,player2V);
+        playersG.activate(player1.character,player1.velocity);
+        playersG.activate(player2.character,player2.velocity);
         ballG.activate(ball,ballV);
         
         //Collisions
-
-        if(player1.getGlobalBounds().intersects(ball.getGlobalBounds())) //Collision with Ball
-        {
-            player1.move(-player1V); //Stop Player
-        }
+        player1.stopCollision(ball);
+        player2.stopCollision(ball);
+        player1.stopCollision(player2.character);
     }
     
     //Rendering
@@ -309,8 +366,8 @@ struct Match
         window.draw(background);
         window.draw(ground);
         window.draw(ball);
-        window.draw(player1);
-        window.draw(player2);
+        window.draw(player1.character);
+        window.draw(player2.character);
         window.draw(goal1);
         window.draw(goal2);
     }
@@ -380,16 +437,16 @@ int main()
                     switch (e.key.code)
                     {
                     case sf::Keyboard::Up:
-                        Game.jump();
+                        Game.player1.upPressed(Game.ground);
                         break;
                     case sf::Keyboard::Down:
-                        Game.down=1;
+                        Game.player1.downPressed();
                         break;
                     case sf::Keyboard::Right:
-                        Game.right=1;
+                        Game.player1.rightPressed();
                         break;
                     case sf::Keyboard::Left:
-                        Game.left=1;
+                        Game.player1.leftPressed();
                         break;
                     }
                     break;
@@ -397,13 +454,13 @@ int main()
                     switch (e.key.code)
                     {
                      case sf::Keyboard::Down:
-                        Game.down=0;
+                        Game.player1.downRealesed();
                         break;
                     case sf::Keyboard::Right:
-                        Game.right=0;
+                        Game.player1.rightRealesed();
                         break;
                     case sf::Keyboard::Left:
-                        Game.left=0;
+                        Game.player1.leftRealesed();
                         break;
                     }
                     break;
