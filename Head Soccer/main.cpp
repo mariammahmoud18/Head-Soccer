@@ -7,6 +7,34 @@
 #define screenWidth 1000
 #define screenHeight 650
 
+struct Gravity
+{
+	sf::RectangleShape ground;
+	
+	bool inAir = 0;
+	float maxV,dv;
+	
+	void activate(sf::Sprite& body,sf::Vector2f& bodyV)
+	{
+		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 <= ground.getPosition().y - ground.getGlobalBounds().height /2;
+		
+		if(inAir)
+		{
+			if(bodyV.y < maxV) bodyV.y += dv;
+			body.move(bodyV);
+		}
+	}
+
+	void setGround(sf::RectangleShape& body,float deltaV=1.5, float maxVelocity=10)
+	{
+		ground = body;
+        maxV = maxVelocity;
+        dv = deltaV;
+
+	}
+
+};
+
 struct Button
 {
     sf::Texture frameTexture;
@@ -80,12 +108,6 @@ struct MainMenu
 
     
     /////////////////FUNCTIONS
-    
-    //Play Music
-    void playMusic() 
-    {
-        menuMusic.play();
-    }
 
     //Creating Objects
     void create()
@@ -105,7 +127,7 @@ struct MainMenu
         //Load and Play Music
         menuMusic.openFromFile("Data/Sounds/MainMenu.wav");
         menuMusic.setLoop(true);
-        menuMusic.play();
+        //menuMusic.play();
 
         //Load Sounds
         btnHoverbufr.loadFromFile("Data/Sounds/btnHover.wav");
@@ -181,82 +203,111 @@ struct Match
     ////VARIABLES
     
     //Movement Booleans
-        bool up=0,down=0,right=0,left=0;
-    
+    bool up=0,down=0,right=0,left=0;
+
     // Textures declaration
     sf::Texture p1, p2, ballT, g1, g2;
 
-    // Sprites declaration
+    // Bodies declaration
     sf::Sprite player1, player2, ball, goal1, goal2;
+    sf::RectangleShape ground;
 
     //Bodies Velcoity
-    sf::Vector2f player1V;
-    sf::Vector2f ballV;
+    sf::Vector2f player1V, player2V, ballV;
+    
+    //Bodies gravity
+    Gravity playersG,ballG;
 
     ////FUNCTIONS
 
     void Load()
     {
-        // Textures
+        //Ground
+        ground.setSize(sf::Vector2f(screenWidth,1));
+        ground.setOrigin(0,0.5);
+        ground.setPosition(0,590);
+        ground.setFillColor(sf::Color::Transparent);
+        
+        // Players
         p1.loadFromFile("Data/Images/Head1.png");
-        p2.loadFromFile("Data/Images/Head2.png");
-        g1.loadFromFile("Data/Images/Goal1.png");
-        g2.loadFromFile("Data/Images/Goal2.png");
-        ballT.loadFromFile("Data/Images/ball.png");
-
-        // Sprites 
         player1.setTexture(p1);
-        player2.setTexture(p2);
-        ball.setTexture(ballT);
-        goal1.setTexture(g1);
-        goal2.setTexture(g2);
-
-        //Set Origin
-        ball.setOrigin(sf::Vector2f(25, 25));
         player1.setOrigin(sf::Vector2f(35, 35));
+        player1.setPosition(sf::Vector2f(120, 100));
+         
+        p2.loadFromFile("Data/Images/Head2.png");
+        player2.setTexture(p2);
         player2.setOrigin(sf::Vector2f(35, 35));
-        goal1.setOrigin(sf::Vector2f(50, 90));
-        goal2.setOrigin(sf::Vector2f(50, 90));
-
-        //Set Position
-        ball.setPosition(sf::Vector2f(500, 100));
-        player1.setPosition(sf::Vector2f(120, 550));
         player2.setPosition(sf::Vector2f(880, 550));
+        
+        playersG.setGround(ground, 5.0f);
+        
+        //Ball
+        ballT.loadFromFile("Data/Images/ball.png");
+        ball.setTexture(ballT);
+        ball.setOrigin(sf::Vector2f(25, 25));
+        ball.setPosition(sf::Vector2f(500, 100));
+        ballG.setGround(ground, 10, 100);
+        
+        //Goals
+        g1.loadFromFile("Data/Images/Goal1.png");
+        goal1.setTexture(g1);
+        goal1.setOrigin(sf::Vector2f(50, 90));
         goal1.setPosition(sf::Vector2f(50, 500));
+        
+        g2.loadFromFile("Data/Images/Goal2.png");
+        goal2.setTexture(g2);
+        goal2.setOrigin(sf::Vector2f(50, 90));
         goal2.setPosition(sf::Vector2f(950, 500));
 
     }   
     
     //Logic
     
+    void jump()
+    {
+        if(player1.getPosition().y + player1.getGlobalBounds().height /2 >= ground.getPosition().y - ground.getGlobalBounds().height /2)
+            up=1;
+    }
+
     void SingleLogic()
     {
+        player1V =sf::Vector2f(0,0);
+        player2V =sf::Vector2f(0,0);
+        ballV =sf::Vector2f(0,0);
+
         //Movement Control
-        if(up) player1V.y = -5.0f;
+
+        //Player1 COntrols
+        if(up && player1.getPosition().y - player1.getGlobalBounds().height / 2 > 410)
+			player1V.y -= 5.0f;
+		else up =0;
         if(down) player1V.y = 5.0f;
         if(right) player1V.x = 5.0f;
         if(left) player1V.x = -5.0f;
         
-        if( !(up || down) ) player1V.y = 0;
         if( !(right || left) ) player1V.x = 0;
 
         //Movement Action
-        player1.move(player1V.x, 0);
+        player1.move(player1V);
 
-        if(player1.getGlobalBounds().intersects(ball.getGlobalBounds())) //Collision with Ball
-            player1.move(-player1V.x,0); //Move in other direction
+        //Gravity
+        playersG.activate(player1,player1V);
+        playersG.activate(player2,player2V);
+        ballG.activate(ball,ballV);
         
-        player1.move(0, player1V.y);
+        //Collisions
 
         if(player1.getGlobalBounds().intersects(ball.getGlobalBounds())) //Collision with Ball
-            player1.move(0,-player1V.y); //Move in other direction
-
+        {
+            player1.move(-player1V); //Stop Player
+        }
     }
     
     //Rendering
     void render(sf::RenderWindow& window, sf::Sprite& background)
     {
         window.draw(background);
+        window.draw(ground);
         window.draw(ball);
         window.draw(player1);
         window.draw(player2);
@@ -302,7 +353,6 @@ int main()
     backgroundTexture.loadFromFile("Data/Images/Background1.jpg");
     background.setTexture(backgroundTexture);
     
-    
     //Main Menu
     MainMenu menu;
     menu.create();
@@ -330,7 +380,7 @@ int main()
                     switch (e.key.code)
                     {
                     case sf::Keyboard::Up:
-                        Game.up=1;
+                        Game.jump();
                         break;
                     case sf::Keyboard::Down:
                         Game.down=1;
@@ -341,16 +391,12 @@ int main()
                     case sf::Keyboard::Left:
                         Game.left=1;
                         break;
-                    
                     }
                     break;
                 case sf::Event::KeyReleased:
                     switch (e.key.code)
                     {
-                    case sf::Keyboard::Up:
-                        Game.up=0;
-                        break;
-                    case sf::Keyboard::Down:
+                     case sf::Keyboard::Down:
                         Game.down=0;
                         break;
                     case sf::Keyboard::Right:
@@ -359,7 +405,6 @@ int main()
                     case sf::Keyboard::Left:
                         Game.left=0;
                         break;
-                    
                     }
                     break;
             }
