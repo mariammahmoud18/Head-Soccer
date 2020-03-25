@@ -9,31 +9,20 @@
 #define groundTop 590
 
 struct Gravity
-{
-	sf::RectangleShape ground;
-	
+{	
 	bool inAir = 0;
-	float maxV,dv;
+	float dv; //Delta V the acceleration of Gravity
 	
 	void activate(sf::Sprite& body,sf::Vector2f& bodyV)
 	{
-		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 < groundTop;
+		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 < groundTop; //If object is above Air
 		
 		if(inAir)
 		{
-			if(bodyV.y < maxV) bodyV.y += dv;
+			bodyV.y += dv;
 			body.move(bodyV);
 		}
 	}
-
-	void setGround(sf::RectangleShape& body,float deltaV=1.5, float maxVelocity=10)
-	{
-		ground = body;
-        maxV = maxVelocity;
-        dv = deltaV;
-
-	}
-
 };
 
 struct Player
@@ -321,7 +310,7 @@ struct Match
 
     ////FUNCTIONS
 
-    void Load()
+    void create()
     {
         //Ground
         ground.setSize(sf::Vector2f(screenWidth,1));
@@ -333,14 +322,14 @@ struct Match
         player1.create("Data/Images/Head1.png", sf::Vector2f(120, 550));
         player2.create("Data/Images/Head2.png", sf::Vector2f(880, 550));
         
-        playersG.setGround(ground, 5.0f);
+        playersG.dv = 5.0f;
         
         //Ball
         ballT.loadFromFile("Data/Images/ball.png");
         ball.setTexture(ballT);
         ball.setOrigin(sf::Vector2f(25, 25));
         ball.setPosition(sf::Vector2f(500, 100));
-        ballG.setGround(ground, 10, 100);
+        ballG.dv = 10.0f;
         
         //Goals
         g1.loadFromFile("Data/Images/Goal1.png");
@@ -437,7 +426,7 @@ int main()
 
     //Single Player Session
     Match Game;
-    Game.Load();
+    Game.create();
 
     //Game Loop
     while (window.isOpen())
