@@ -278,10 +278,8 @@ struct MainMenu
     }
 
     //Rendering
-    void render(sf::RenderWindow& window,sf::Sprite& background)
+    void render(sf::RenderWindow& window)
     {
-        window.draw(background);
-
         for (int i = 0; i < noOfBtns; i++)
         {
             btn[i].render(window);
@@ -371,9 +369,8 @@ struct Match
     }
     
     //Rendering
-    void render(sf::RenderWindow& window, sf::Sprite& background)
+    void render(sf::RenderWindow& window)
     {
-        window.draw(background);
         window.draw(ground);
         window.draw(ball);
         window.draw(player1.character);
@@ -492,14 +489,15 @@ int main()
 
         //Rendering
         window.clear();
+        window.draw(background);
         
         switch (session)
         {
         case 'd': //Default which is main menu
-            menu.render(window, background);
+            menu.render(window);
             break;
         case 's': //Single Player
-            Game.render(window, background);
+            Game.render(window);
             break;
         case 'm': //Multiplayer
             break;
