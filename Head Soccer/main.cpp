@@ -6,6 +6,7 @@
 //Constants
 #define screenWidth 1000
 #define screenHeight 650
+#define groundTop 590
 
 struct Gravity
 {
@@ -16,7 +17,7 @@ struct Gravity
 	
 	void activate(sf::Sprite& body,sf::Vector2f& bodyV)
 	{
-		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 <= ground.getPosition().y - ground.getGlobalBounds().height /2;
+		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 < groundTop;
 		
 		if(inAir)
 		{
@@ -37,13 +38,17 @@ struct Gravity
 
 struct Player
 {
-    //Movement Booleans
-    bool up=0,down=0,right=0,left=0;
+    //VARIABLES
+
+    bool up=0,down=0,right=0,left=0; //Movement Booleans
     
+    //Character
     sf::Texture texture;
     sf::Sprite character;
 
-    sf::Vector2f velocity;
+    sf::Vector2f velocity; //Character current Velocity
+
+    //FUNCTIONS
 
     void create(std::string path,sf::Vector2f pos)
     {
@@ -56,15 +61,20 @@ struct Player
     void move()
     {
         velocity = sf::Vector2f();
+        float maxY =410.0f;
+        float currentTopPos = character.getGlobalBounds().top;
+        float currentBottomPos = currentTopPos + character.getGlobalBounds().height;
+        float currentLeftPos = character.getGlobalBounds().left; //character.getPosition().y - character.getGlobalBounds().width / 2;
+        float currentRightPos = currentLeftPos + character.getGlobalBounds().width;
 
         //Player1 COntrols
-        if(up && character.getPosition().y - character.getGlobalBounds().height / 2 > 410)
+        if(up && currentTopPos > maxY)
 			velocity.y -= 5.0f;
 		else up =0;
 
-        if(down) velocity.y = 5.0f;
-        if(right) velocity.x = 5.0f;
-        if(left) velocity.x = -5.0f;
+        if(down && currentBottomPos < groundTop) velocity.y = 5.0f;
+        if(right && currentRightPos < screenWidth) velocity.x = 5.0f;
+        if(left && currentLeftPos > 0) velocity.x = -5.0f;
 
         if( !(right || left) ) velocity.x = 0;
 
@@ -72,19 +82,21 @@ struct Player
         character.move(velocity);
     }
 
-    void stopCollision(sf::Sprite& body)
+    bool stopCollision(sf::Sprite& body)
     {
         //Collisions
-        if(character.getGlobalBounds().intersects(body.getGlobalBounds())) //Collision with Ball
+        if(character.getGlobalBounds().intersects(body.getGlobalBounds())) //Collision with body
         {
             character.move(-velocity); //Stop Player
+            return true;
         }
+        return false;
     }
     
     //pressed button
-    void upPressed(sf::RectangleShape& ground)
+    void upPressed()
     {
-        if(character.getPosition().y + character.getGlobalBounds().height /2 >= ground.getPosition().y - ground.getGlobalBounds().height /2)
+        if(character.getPosition().y + character.getGlobalBounds().height /2 >= groundTop)
             up=1;
     }
 
@@ -303,6 +315,10 @@ struct Match
     // gravity
     Gravity playersG,ballG;
 
+    //Sounds
+    sf::SoundBuffer touchBallbuff;
+    sf::Sound touchBall;
+
     ////FUNCTIONS
 
     void Load()
@@ -310,11 +326,11 @@ struct Match
         //Ground
         ground.setSize(sf::Vector2f(screenWidth,1));
         ground.setOrigin(0,0.5);
-        ground.setPosition(0,590);
+        ground.setPosition(0,groundTop);
         ground.setFillColor(sf::Color::Transparent);
         
         // Players
-        player1.create("Data/Images/Head1.png", sf::Vector2f(120, 100));
+        player1.create("Data/Images/Head1.png", sf::Vector2f(120, 550));
         player2.create("Data/Images/Head2.png", sf::Vector2f(880, 550));
         
         playersG.setGround(ground, 5.0f);
@@ -337,6 +353,10 @@ struct Match
         goal2.setOrigin(sf::Vector2f(50, 90));
         goal2.setPosition(sf::Vector2f(950, 500));
 
+        //Sounds
+        touchBallbuff.loadFromFile("Data/Sounds/Kick.wav");
+        touchBall.setBuffer(touchBallbuff);
+
     }   
     
     //Logic
@@ -355,8 +375,9 @@ struct Match
         ballG.activate(ball,ballV);
         
         //Collisions
-        player1.stopCollision(ball);
-        player2.stopCollision(ball);
+        if(player1.stopCollision(ball) || player2.stopCollision(ball))
+            touchBall.play();
+
         player1.stopCollision(player2.character);
     }
     
@@ -391,7 +412,7 @@ void loadScreen(sf::RenderWindow& window)
 int main()
 {
     //variables
-    char session='d'; // to know which window to render and handle
+    char session='d'; // to know which screen to render and handle
     sf::Vector2f mousePos; //to save current mouse position
 
     //Creating window
@@ -437,7 +458,7 @@ int main()
                     switch (e.key.code)
                     {
                     case sf::Keyboard::Up:
-                        Game.player1.upPressed(Game.ground);
+                        Game.player1.upPressed();
                         break;
                     case sf::Keyboard::Down:
                         Game.player1.downPressed();
@@ -466,6 +487,7 @@ int main()
                     break;
             }
         }
+
         //Logic
         switch (session)
         {
@@ -476,8 +498,8 @@ int main()
             Game.SingleLogic();
             break;
         }
-        //Move Cursor with the mouse
-        menu.moveCursor(mousePos);
+
+        menu.moveCursor(mousePos); //Move Cursor with the mouse
 
         //Rendering
         window.clear();
