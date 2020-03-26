@@ -303,19 +303,13 @@ struct Match
     Gravity playersG,ballG;
 
     //Sounds
-    sf::SoundBuffer touchBallbuff;
-    sf::Sound touchBall;
+    sf::SoundBuffer kickBallSoundbuff;
+    sf::Sound kickBallSound;
 
     ////FUNCTIONS
 
     void create()
     {
-        //Ground
-        ground.setSize(sf::Vector2f(screenWidth,1));
-        ground.setOrigin(0,0.5);
-        ground.setPosition(0,groundTop);
-        ground.setFillColor(sf::Color::Transparent);
-        
         // Players
         player1.create("Data/Images/Head1.png", sf::Vector2f(120, 550));
         player2.create("Data/Images/Head2.png", sf::Vector2f(880, 550));
@@ -341,8 +335,8 @@ struct Match
         goal2.setPosition(sf::Vector2f(950, 500));
 
         //Sounds
-        touchBallbuff.loadFromFile("Data/Sounds/Kick.wav");
-        touchBall.setBuffer(touchBallbuff);
+        kickBallSoundbuff.loadFromFile("Data/Sounds/Kick.wav");
+        kickBallSound.setBuffer(kickBallSoundbuff);
 
     }   
     
@@ -363,7 +357,7 @@ struct Match
         
         //Collisions
         if(player1.stopCollision(ball) || player2.stopCollision(ball))
-            touchBall.play();
+            kickBallSound.play();
 
         player1.stopCollision(player2.character);
     }
