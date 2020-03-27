@@ -11,7 +11,7 @@
 struct Gravity
 {	
 	bool inAir = 0;
-	float dv; //Delta V the acceleration of Gravity
+	float dv=1.5f; //Delta V the acceleration of Gravity
 	
 	void activate(sf::Sprite& body,sf::Vector2f& bodyV)
 	{
@@ -213,7 +213,7 @@ struct MainMenu
         //Create Buttons : Divided spaces in screen into 8 Xs and 7 Ys to put buttons in order
         for (char i = 0; i < 4; i++)
         {
-            btn[i].create(sf::Vector2f(screenWidth /8 * 4, screenHeight /6.5 * (i+3) ), btnTitle[i]);
+            btn[i].create(sf::Vector2f(screenWidth /8 * 4, screenHeight / 6.5f * (i+3) ), btnTitle[i]);
         }
 
         //Load and Play Music
