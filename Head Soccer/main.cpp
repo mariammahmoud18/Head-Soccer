@@ -11,16 +11,21 @@
 struct Gravity
 {	
 	bool inAir = 0;
-	float dv=1.5f; //Delta V the acceleration of Gravity
+	float dv=1.5f, maxVY =10.0f, lostE = 0.25f,groundFr = 0.5f;
 	
-	void activate(sf::Sprite& body,sf::Vector2f& bodyV)
+    void activate(sf::Sprite& body,sf::Vector2f& bodyV)
 	{
 		inAir = body.getPosition().y + body.getGlobalBounds().height / 2 < groundTop; //If object is above Air
 		
 		if(inAir)
 		{
-			bodyV.y += dv;
-			body.move(bodyV);
+			if(bodyV.y < maxVY) bodyV.y += dv;
+		}
+		else
+		{
+		 	bodyV.y = -bodyV.y + bodyV.y * lostE;
+			bodyV.x -= bodyV.x * groundFr;
+			body.setPosition(body.getPosition().x, groundTop - body.getGlobalBounds().height / 2 + 5);
 		}
 	}
 };
@@ -30,13 +35,13 @@ struct Player
     //VARIABLES
 
     bool up=0,down=0,right=0,left=0; //Movement Booleans
-    
+    const float lostE = 0.25f;
     //Character
     sf::Texture texture;
     sf::Sprite character;
 
     sf::Vector2f velocity; //Character current Velocity
-
+    Gravity gravity; //chracter gravity
     //FUNCTIONS
 
     void create(std::string path,sf::Vector2f pos)
@@ -45,27 +50,40 @@ struct Player
         character.setTexture(texture);
         character.setPosition(pos);
         character.setOrigin(character.getGlobalBounds().width / 2,character.getGlobalBounds().height / 2);
+        gravity.lostE = 0.9f;
+        gravity.dv = 0.15f;
     }
 
     void move()
     {
-        velocity = sf::Vector2f();
-        float maxY =410.0f;
         float currentTopPos = character.getGlobalBounds().top;
         float currentBottomPos = currentTopPos + character.getGlobalBounds().height;
         float currentLeftPos = character.getGlobalBounds().left; //character.getPosition().y - character.getGlobalBounds().width / 2;
         float currentRightPos = currentLeftPos + character.getGlobalBounds().width;
 
-        //Player1 COntrols
-        if(up && currentTopPos > maxY)
-			velocity.y -= 5.0f;
-		else up =0;
+        //Controls
+        if(up)
+        {
+			velocity.y = -6.0f;
+            up = 0;
+        }
+		else gravity.activate(character,velocity);
 
         if(down && currentBottomPos < groundTop) velocity.y = 5.0f;
         if(right && currentRightPos < screenWidth) velocity.x = 5.0f;
         if(left && currentLeftPos > 0) velocity.x = -5.0f;
-
-        if( !(right || left) ) velocity.x = 0;
+        
+        //Screen Boundries
+        if(character.getGlobalBounds().left <= 0) //Left Boundries
+		{
+			character.setPosition(character.getGlobalBounds().width / 2,character.getPosition().y);
+			velocity.x = -velocity.x + velocity.x * lostE;
+		}
+		if(character.getGlobalBounds().left + character.getGlobalBounds().width >= screenWidth) //Right Boundries
+		{
+			character.setPosition(screenWidth - character.getGlobalBounds().width / 2,character.getPosition().y);
+			velocity.x = -velocity.x + velocity.x * lostE;
+		}
 
         //Movement Action
         character.move(velocity);
@@ -76,7 +94,7 @@ struct Player
         //Collisions
         if(character.getGlobalBounds().intersects(body.getGlobalBounds())) //Collision with body
         {
-            character.move(-velocity); //Stop Player
+            velocity = -velocity; //Stop Player
             return true;
         }
         return false;
@@ -106,7 +124,7 @@ struct Player
 
     //Released button
 
-    void upRealesed(sf::RectangleShape& ground)
+    void upRealesed()
     {
         up=0;
     }
@@ -124,6 +142,36 @@ struct Player
     void leftRealesed()
     {
         left=0;
+    }
+};
+
+struct Ball
+{
+    ////VARIABLES
+
+    // Ball Shape
+    sf::Texture ballT; //Texture to hold image
+    sf::Sprite ball; //sprite to load image
+    const float radius=25;
+    
+    // Physics
+    Gravity gravity;
+    sf::Vector2f velocity;
+
+    void create()
+    {
+        ballT.loadFromFile("Data/Images/ball.png");
+        ball.setTexture(ballT);
+        ball.setOrigin(sf::Vector2f(25, 25));
+        ball.setPosition(sf::Vector2f(500, 100));
+        
+    }
+
+    void move()
+    {
+        gravity.activate(ball, velocity);
+
+        ball.move(velocity);
     }
 };
 
@@ -292,16 +340,14 @@ struct Match
     ////VARIABLES
 
     // Textures declaration
-    sf::Texture g1,g2,ballT;
+    sf::Texture g1,g2;
 
     // Bodies declaration
-    sf::Sprite ball, goal1, goal2;
+    sf::Sprite goal1, goal2;
     sf::RectangleShape ground;
     Player player1,player2;
+    Ball ball;
     
-    // gravity
-    Gravity playersG,ballG;
-
     //Sounds
     sf::SoundBuffer kickBallSoundbuff;
     sf::Sound kickBallSound;
@@ -314,14 +360,8 @@ struct Match
         player1.create("Data/Images/Head1.png", sf::Vector2f(120, 550));
         player2.create("Data/Images/Head2.png", sf::Vector2f(880, 550));
         
-        playersG.dv = 5.0f;
-        
         //Ball
-        ballT.loadFromFile("Data/Images/ball.png");
-        ball.setTexture(ballT);
-        ball.setOrigin(sf::Vector2f(25, 25));
-        ball.setPosition(sf::Vector2f(500, 100));
-        ballG.dv = 10.0f;
+        ball.create();
         
         //Goals
         g1.loadFromFile("Data/Images/Goal1.png");
@@ -344,19 +384,13 @@ struct Match
 
     void SingleLogic()
     {
-        sf::Vector2f ballV;
-
         //Movement Control
         player1.move();
         player2.move();
+        ball.move();
 
-        //Gravity
-        playersG.activate(player1.character,player1.velocity);
-        playersG.activate(player2.character,player2.velocity);
-        ballG.activate(ball,ballV);
-        
         //Collisions
-        if(player1.stopCollision(ball) || player2.stopCollision(ball))
+        if(player1.stopCollision(ball.ball) || player2.stopCollision(ball.ball))
             kickBallSound.play();
 
         player1.stopCollision(player2.character);
@@ -366,7 +400,7 @@ struct Match
     void render(sf::RenderWindow& window)
     {
         window.draw(ground);
-        window.draw(ball);
+        window.draw(ball.ball);
         window.draw(player1.character);
         window.draw(player2.character);
         window.draw(goal1);
@@ -454,7 +488,7 @@ int main()
                 case sf::Event::KeyReleased:
                     switch (e.key.code)
                     {
-                     case sf::Keyboard::Down:
+                    case sf::Keyboard::Down:
                         Game.player1.downRealesed();
                         break;
                     case sf::Keyboard::Right:
